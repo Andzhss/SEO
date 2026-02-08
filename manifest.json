@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "SEO Auditor Pro",
-  "version": "2.2",
-  "description": "Profesionāls SEO audits, AI analīze un atskaites.",
+  "name": "SEO Agency Auditor (Private)",
+  "version": "3.0",
+  "description": "Privāts rīks ātrai SEO diagnostikai un klientu piesaistei.",
   "permissions": [
     "activeTab",
     "scripting",
@@ -10,6 +10,6 @@
   ],
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Atvērt SEO Auditu"
+    "default_title": "Veikt Auditu"
   }
 }
