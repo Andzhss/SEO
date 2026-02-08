@@ -1,15 +1,21 @@
 {
   "manifest_version": 3,
-  "name": "One-Click SEO Auditor",
-  "version": "1.0",
-  "description": "Perform quick SEO audits on client websites using Gemini API.",
+  "name": "SEO Auditor (Side Panel)",
+  "version": "1.1",
+  "description": "Veic SEO auditu sānjoslā (Side Panel), kas nepazūd pārslēdzot tabus.",
   "permissions": [
+    "sidePanel",
     "activeTab",
     "scripting",
     "storage"
   ],
+  "background": {
+    "service_worker": "service-worker.js"
+  },
   "action": {
-    "default_popup": "popup.html",
-    "default_title": "SEO Auditor"
+    "default_title": "Atvērt SEO Auditu"
+  },
+  "side_panel": {
+    "default_path": "popup.html"
   }
 }
