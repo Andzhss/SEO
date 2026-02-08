@@ -1,4 +1,4 @@
-fdocument.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
   const apiKeyInput = document.getElementById('apiKey');
   const toneSelect = document.getElementById('tone');
   const generateBtn = document.getElementById('generateBtn');
