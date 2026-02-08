@@ -1,262 +1,203 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const apiKeyInput = document.getElementById('apiKey');
-  const toneSelect = document.getElementById('tone');
-  
+  // UI Elementi
   const scanBtn = document.getElementById('scanBtn');
-  const generateAiBtn = document.getElementById('generateAiBtn');
-  const downloadBtn = document.getElementById('downloadBtn');
+  const downloadReportBtn = document.getElementById('downloadReportBtn');
+  const generateEmailBtn = document.getElementById('generateEmailBtn');
+  const setupPanel = document.getElementById('setupPanel');
+  const apiKeyInput = document.getElementById('apiKey');
+  const saveKeyBtn = document.getElementById('saveKeyBtn');
   
   const reportSection = document.getElementById('reportSection');
-  const basicMetrics = document.getElementById('basicMetrics');
-  const aiResultContainer = document.getElementById('aiResultContainer');
-  const auditResult = document.getElementById('auditResult');
-  const copyBtn = document.getElementById('copyBtn');
   const statusDiv = document.getElementById('status');
+  const domainDisplay = document.getElementById('domainDisplay');
+  const aiOutput = document.getElementById('aiOutput');
+  const aiSection = document.getElementById('aiSection');
 
-  let currentSeoData = null; 
+  let currentData = null;
 
-  const storedKey = localStorage.getItem('geminiApiKey');
-  if (storedKey) {
-    apiKeyInput.value = storedKey;
-  }
-
-  // --- 1. SOLIS: SKENĒT LAPU ---
-  if (scanBtn) {
-      scanBtn.addEventListener('click', async () => {
-        showStatus('Skenē lapu...', 'status');
-        
-        reportSection.style.display = 'none';
-        aiResultContainer.style.display = 'none';
-        currentSeoData = null;
-
-        try {
-          const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-          if (!tab) throw new Error('Nav aktīva taba.');
-
-          // Pārbauda, vai lapa nav aizsargāta
-          if (tab.url.startsWith('chrome://') || tab.url.startsWith('edge://')) {
-             throw new Error('Nevar skenēt pārlūka sistēmas lapas.');
-          }
-
-          const injectionResults = await chrome.scripting.executeScript({
-            target: { tabId: tab.id },
-            files: ['content.js']
-          });
-
-          if (!injectionResults || !injectionResults[0] || !injectionResults[0].result) {
-            throw new Error('Neizdevās nolasīt datus.');
-          }
-
-          currentSeoData = injectionResults[0].result;
-          
-          renderBasicReport(currentSeoData);
-          reportSection.style.display = 'block';
-          showStatus('Skenēšana pabeigta.', 'success');
-
-        } catch (error) {
-          console.error(error);
-          showStatus('Kļūda: ' + error.message, 'error');
-        }
-      });
-  }
-
-  // --- LEJUPIELĀDE ---
-  // --- LEJUPIELĀDE ---
-  if (downloadBtn) {
-      downloadBtn.addEventListener('click', () => {
-        if (!currentSeoData) return;
-
-        const d = currentSeoData;
-        const dateStr = new Date().toLocaleString();
-        
-        let text = `SEO TEHNISKAIS PĀRSKATS\n`;
-        text += `Ģenerēts: ${dateStr}\n`;
-        text += `URL: ${d.url}\n`;
-        text += `---------------------------\n\n`;
-
-        text += `[PAMATDATI]\n`;
-        text += `Title: ${d.title}\n`;
-        text += `Meta Description: ${d.metaDescription || "NAV"}\n`;
-        text += `Robots: ${d.robots}\n`;
-        text += `Canonical: ${d.canonical || "NAV"}\n\n`;
-
-        text += `[SATURS]\n`;
-        text += `H1: ${d.h1 || "NAV"}\n`;
-        text += `Vārdu skaits: ${d.wordCount}\n`;
-        text += `Attēli: ${d.imageCount} (bez ALT: ${d.imagesWithoutAlt})\n\n`;
-
-        text += `[VIRSRAKSTI H2 (${d.h2Count})]\n`;
-        if (d.h2s) d.h2s.forEach(h => text += `- ${h}\n`);
-        
-        text += `\n[VIRSRAKSTI H3 (${d.h3Count})]\n`;
-        if (d.h3s) d.h3s.forEach(h => text += `- ${h}\n`);
-
-        // --- SĀKAS IZMAIŅAS FAILA NOSAUKUMAM ---
-        let fileName = 'seo-report.txt'; // Noklusējums, ja kaut kas noiet greizi
-
-        try {
-            const urlObj = new URL(d.url);
-            
-            // 1. Iegūstam domēnu (piem., "google.com" no "www.google.com")
-            const domain = urlObj.hostname.replace('www.', '');
-
-            // 2. Iegūstam ceļu (path), aizstājam simbolus, lai derētu faila nosaukumam
-            // Piemēram: "/blogs/jauns-raksts" kļūs par "blogs-jauns-raksts"
-            let path = urlObj.pathname.replace(/[^a-zA-Z0-9]/g, '-');
-            
-            // Noņemam liekās svītras sākumā/beigās un dubultās svītras
-            path = path.replace(/-+/g, '-').replace(/^-|-$/g, '');
-
-            // 3. Saliekam kopā
-            if (path) {
-                fileName = `${domain}_${path}_report.txt`;
-            } else {
-                // Ja ir tikai sākumlapa
-                fileName = `${domain}_home_report.txt`;
-            }
-        } catch (e) {
-            console.error("Neizdevās izveidot faila nosaukumu no URL", e);
-        }
-        // --- BEIDZAS IZMAIŅAS ---
-
-        const blob = new Blob([text], { type: 'text/plain' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = fileName; // Šeit ieliekam jauno ģenerēto nosaukumu
-        a.click();
-        URL.revokeObjectURL(url);
-      });
-  }
-
-  // --- 2. SOLIS: AI ANALĪZE ---
-  if (generateAiBtn) {
-      generateAiBtn.addEventListener('click', async () => {
-        const apiKey = apiKeyInput.value.trim();
-        const tone = toneSelect.value;
-
-        if (!apiKey) {
-          showStatus('Lūdzu, ievadi Gemini API atslēgu.', 'error');
-          return;
-        }
-        if (!currentSeoData) {
-          showStatus('Vispirms veic lapas skenēšanu!', 'error');
-          return;
-        }
-
-        localStorage.setItem('geminiApiKey', apiKey);
-        
-        showStatus('AI analizē datus...', 'status');
-        aiResultContainer.style.display = 'none';
-        generateAiBtn.disabled = true;
-
-        try {
-          const report = await generateReport(apiKey, tone, currentSeoData);
-          auditResult.value = report;
-          aiResultContainer.style.display = 'block';
-          showStatus('AI Audits gatavs!', 'success');
-        } catch (error) {
-          console.error(error);
-          showStatus('AI Kļūda: ' + error.message, 'error');
-        } finally {
-          generateAiBtn.disabled = false;
-        }
-      });
-  }
-
-  if (copyBtn) {
-      copyBtn.addEventListener('click', () => {
-        auditResult.select();
-        navigator.clipboard.writeText(auditResult.value).then(() => {
-            const original = copyBtn.innerText;
-            copyBtn.innerText = 'Nokopēts!';
-            setTimeout(() => copyBtn.innerText = original, 2000);
-        });
-      });
-  }
-
-  function showStatus(msg, type) {
-    if (statusDiv) {
-        statusDiv.textContent = msg;
-        statusDiv.className = 'status ' + type;
+  // Ielādējam API atslēgu
+  chrome.storage.local.get(['geminiApiKey'], (result) => {
+    if (result.geminiApiKey) {
+      apiKeyInput.value = result.geminiApiKey;
+      setupPanel.style.display = 'none'; // Paslēpjam, ja ir atslēga
     }
+  });
+
+  saveKeyBtn.addEventListener('click', () => {
+    const key = apiKeyInput.value.trim();
+    if(key) {
+      chrome.storage.local.set({geminiApiKey: key}, () => {
+        setupPanel.style.display = 'none';
+        showStatus('API atslēga saglabāta!', 'text-success');
+      });
+    }
+  });
+
+  // --- 1. SKENĒŠANA ---
+  scanBtn.addEventListener('click', async () => {
+    showStatus('Analizēju lapu...', '');
+    reportSection.style.display = 'none';
+    
+    try {
+      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      
+      // Pārbaude vai nav sistēmas lapa
+      if(!tab.url.startsWith('http')) {
+        showStatus('Šo lapu nevar skenēt.', 'text-danger');
+        return;
+      }
+
+      const results = await chrome.scripting.executeScript({
+        target: { tabId: tab.id },
+        files: ['content.js']
+      });
+
+      if (!results || !results[0] || !results[0].result) throw new Error('Nav datu');
+
+      currentData = results[0].result;
+      renderReport(currentData);
+      showStatus('Analīze pabeigta.', 'text-success');
+
+    } catch (e) {
+      console.error(e);
+      showStatus('Kļūda skenējot: ' + e.message, 'text-danger');
+    }
+  });
+
+  // --- 2. RENDERING (Attēlošana) ---
+  function renderReport(data) {
+    reportSection.style.display = 'block';
+    domainDisplay.textContent = data.domain;
+
+    // Augšējie rādītāji
+    document.getElementById('valSpeed').textContent = data.loadTime;
+    document.getElementById('valSpeed').className = parseInt(data.loadTime) > 2000 ? 'val text-danger' : 'val text-success';
+    
+    document.getElementById('valWords').textContent = data.wordCount;
+    document.getElementById('valTech').textContent = data.cms;
+
+    // Detalizētais saraksts
+    const list = document.getElementById('detailedMetrics');
+    list.innerHTML = '';
+
+    addDetail(list, 'Title Garums', `${data.titleLen} zīmes`, data.titleLen > 10 && data.titleLen < 70);
+    addDetail(list, 'Meta Description', data.metaDescription ? 'Ir' : 'NAV', !!data.metaDescription);
+    addDetail(list, 'H1 Virsraksts', data.h1Count === 1 ? 'OK' : (data.h1Count === 0 ? 'NAV' : 'Vairāki!'), data.h1Count === 1);
+    addDetail(list, 'Attēli bez ALT', data.imagesWithoutAlt, data.imagesWithoutAlt === 0);
+    addDetail(list, 'Schema.org', data.schemaTypes, data.schemaTypes !== "Nav atrasts");
+    addDetail(list, 'Mobile Friendly', data.mobileFriendly ? 'Jā' : 'Nē', data.mobileFriendly);
+    addDetail(list, 'Servera laiks (TTFB)', data.ttfb, parseInt(data.ttfb) < 600);
   }
 
-  // --- RENDERING FUNKCIJA (TABULA) ---
-  function renderBasicReport(data) {
-    const createRow = (icon, label, value, isGood) => {
-        let valueClass = 'metric-value';
-        if (isGood === false) valueClass += ' bad';
-        if (isGood === true) valueClass += ' good';
-
-        return `
-            <div class="metric-row">
-                <span class="metric-label">${icon} ${label}</span>
-                <span class="${valueClass}">${value}</span>
-            </div>`;
-    };
-
-    let html = '';
-    
-    // Meta Dati
-    html += `<div class="group-header">Meta & Saturs</div>`;
-    const titleLen = data.title ? data.title.length : 0;
-    html += createRow('📝', 'Title', data.title || '(Tukšs)', titleLen > 0 && titleLen < 65);
-    
-    const descLen = data.metaDescription ? data.metaDescription.length : 0;
-    html += createRow('📄', 'Description', data.metaDescription || '(Tukšs)', descLen > 50 && descLen < 160);
-    
-    const robotsGood = data.robots.toLowerCase().includes('noindex') ? false : true;
-    html += createRow('🤖', 'Robots Tag', data.robots, robotsGood);
-
-    // Struktūra
-    html += `<div class="group-header">Struktūra</div>`;
-    html += createRow('🛑', 'H1 Virsraksts', data.h1 || '(Trūkst)', !!data.h1);
-    html += createRow('📑', 'H2 / H3', `${data.h2Count} / ${data.h3Count}`, null);
-    html += createRow('🔠', 'Vārdu skaits', data.wordCount, data.wordCount > 300);
-    
-    const imgStatus = (data.imagesWithoutAlt === 0); 
-    html += createRow('🖼️', 'Attēli (bez ALT)', `${data.imagesWithoutAlt} / ${data.imageCount}`, imgStatus);
-
-    // Tehniskais
-    html += `<div class="group-header">Tehniskais</div>`;
-    html += createRow('🔗', 'Canonical URL', data.canonical ? 'Ir' : 'Nav', !!data.canonical);
-    html += createRow('🏷️', 'Schema (JSON-LD)', data.hasSchema ? 'Ir' : 'Nav', data.hasSchema);
-    html += createRow('📱', 'Mobile Viewport', data.viewport ? 'Ir' : 'Nav', data.viewport);
-    
-    const ogStatus = data.ogTags.hasTitle && data.ogTags.hasImage;
-    html += createRow('👍', 'Open Graph (FB)', ogStatus ? 'Ir' : 'Daļēji/Nav', ogStatus);
-
-    basicMetrics.innerHTML = html;
+  function addDetail(container, label, value, isGood) {
+    const div = document.createElement('div');
+    div.className = 'detail-row';
+    const colorClass = isGood ? 'text-success' : 'text-danger';
+    div.innerHTML = `<span class="detail-label">${label}</span><span class="detail-val ${colorClass}">${value}</span>`;
+    container.appendChild(div);
   }
 
-  async function generateReport(apiKey, tone, data) {
+  // --- 3. AUDITA ĢENERATORS (TXT Fails) ---
+  downloadReportBtn.addEventListener('click', () => {
+    if (!currentData) return;
+    const d = currentData;
+    
+    // Šī ir tava profesionālā "veidne"
+    const lines = [
+      `SEO AUDITA PĀRSKATS: ${d.domain}`,
+      `Datums: ${new Date().toLocaleDateString()}`,
+      `------------------------------------------------`,
+      ``,
+      `1. KRITISKĀS KĻŪDAS (Jālabo nekavējoties)`,
+      `   [${d.h1Count !== 1 ? 'X' : '✓'}] H1 Virsraksts: ${d.h1Count === 0 ? 'TRŪKST (Liela problēma)' : (d.h1Count > 1 ? 'Pārāk daudz (Mulsina Google)' : 'Kārtībā')}`,
+      `   [${d.imagesWithoutAlt > 0 ? 'X' : '✓'}] Attēlu optimizācija: ${d.imagesWithoutAlt} attēliem trūkst apraksta (ALT tags).`,
+      `   [${parseInt(d.loadTime) > 2500 ? 'X' : '✓'}] Ātrums: Lapa ielādējas ${d.loadTime}. (Ieteicams zem 2500ms).`,
+      ``,
+      `2. SATURA ANALĪZE`,
+      `   - Title Tags: "${d.title}" (${d.titleLen} zīmes).`,
+      `   - Meta Description: ${d.metaDescription ? 'Ir' : 'TRŪKST - Tas samazina klikšķus meklētājā.'}`,
+      `   - Vārdu skaits: ${d.wordCount} vārdi.`,
+      ``,
+      `3. TEHNISKAIS STĀVOKLIS`,
+      `   - CMS/Platforma: ${d.cms}`,
+      `   - Schema Dati: ${d.schemaTypes}`,
+      `   - Mobilā versija: ${d.mobileFriendly ? 'Ir' : 'Nav optimizēts (Kritiski!)'}`,
+      `   - Servera reakcija (TTFB): ${d.ttfb}`,
+      ``,
+      `------------------------------------------------`,
+      `KOPSAVILKUMS:`,
+      `Šai lapai ir potenciāls, bet tehniskās kļūdas traucē tai ierindoties augstāk Google meklētājā.`,
+      `Ieteicamais nākamais solis: Veikt pilnu atslēgvārdu izpēti un salabot H1/Attēlu kļūdas.`
+    ];
+
+    const blob = new Blob([lines.join('\n')], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${d.domain}_SEO_Audits.txt`;
+    a.click();
+  });
+
+  // --- 4. AI EMAIL ĢENERATORS ---
+  generateEmailBtn.addEventListener('click', async () => {
+    const apiKey = apiKeyInput.value;
+    if (!apiKey) {
+      showStatus('Ievadi API atslēgu!', 'text-danger');
+      setupPanel.style.display = 'block';
+      return;
+    }
+    
+    showStatus('Ģenerē e-pastu...', '');
+    generateEmailBtn.disabled = true;
+    aiSection.style.display = 'block';
+    
+    const d = currentData;
+    // Izceļam lielāko problēmu
+    let mainProblem = "vispārēja optimizācija";
+    if (d.h1Count !== 1) mainProblem = "lapas struktūra (H1 kļūdas)";
+    else if (d.imagesWithoutAlt > 5) mainProblem = "attēlu neesamība Google meklētājā";
+    else if (parseInt(d.loadTime) > 3000) mainProblem = "lēna lapas darbība";
+
     const prompt = `
-      You are an expert SEO Auditor. Analyze this landing page data and write a short, punchy cold-email snippet (in Latvian) pointing out the top 3 critical errors and how fixing them increases revenue.
-      Tone: ${tone}
-      Data:
-      - Title: ${data.title}
-      - Meta Desc: ${data.metaDescription}
-      - Robots: ${data.robots}
-      - H1: ${data.h1}
-      - Word Count: ${data.wordCount}
-      - Images without Alt: ${data.imagesWithoutAlt} / ${data.imageCount}
-      - Body Snippet: "${data.bodySnippet}"
+      You are an SEO expert sales person. Write a short, personalized cold email in Latvian to the owner of ${d.domain}.
+      
+      Don't sound like a robot. Be direct and helpful.
+      
+      The Hook: I just visited your site and noticed a problem with ${mainProblem}.
+      The Data to mention:
+      1. Load speed is ${d.loadTime} (Slow sites lose customers).
+      2. Missing Alt tags on ${d.imagesWithoutAlt} images.
+      3. ${d.metaDescription ? "Meta description exists but needs review" : "Missing Meta Description (Critical)"}.
+      
+      Call to action: Ask if I can send them a video showing how to fix this in 5 minutes.
+      My Name: [Tavs Vārds]
     `;
 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
-    
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-    });
-
-    if (!response.ok) {
-      const err = await response.json();
-      throw new Error(err.error?.message || 'API kļūda');
+    try {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+      });
+      
+      const resData = await response.json();
+      aiOutput.value = resData.candidates[0].content.parts[0].text;
+      showStatus('E-pasts gatavs!', 'text-success');
+    } catch (e) {
+      aiOutput.value = "Kļūda: " + e.message;
+    } finally {
+      generateEmailBtn.disabled = false;
     }
-    const result = await response.json();
-    return result.candidates[0].content.parts[0].text;
+  });
+
+  document.getElementById('copyAiBtn').addEventListener('click', () => {
+    aiOutput.select();
+    document.execCommand('copy');
+  });
+
+  function showStatus(msg, className) {
+    statusDiv.textContent = msg;
+    statusDiv.className = 'status ' + className;
   }
 });
