@@ -12,27 +12,40 @@
     
     <div class="form-group">
       <label for="apiKey">Gemini API Key</label>
-      <input type="password" id="apiKey" placeholder="Enter your API Key">
+      <input type="password" id="apiKey" placeholder="Ievadi API atslēgu">
     </div>
 
     <div class="form-group">
-      <label for="tone">Tone of Voice</label>
+      <label for="tone">AI Tonis</label>
       <select id="tone">
-        <option value="Professional">Professional</option>
-        <option value="Critical">Critical</option>
-        <option value="Sales-focused">Sales-focused</option>
+        <option value="Professional">Profesionāls</option>
+        <option value="Critical">Kritisks</option>
+        <option value="Sales-focused">Pārdošanas</option>
       </select>
     </div>
 
-    <button id="generateBtn" class="primary-btn">Generate Audit</button>
-
-    <div id="resultSection" class="result-section" style="display: none;">
-      <label for="auditResult">Audit Result</label>
-      <textarea id="auditResult" rows="10"></textarea>
-      <button id="copyBtn" class="secondary-btn">Copy to Clipboard</button>
-    </div>
+    <button id="scanBtn" class="primary-btn">Veikt SEO Pārbaudi</button>
 
     <div id="status" class="status"></div>
+
+    <div id="reportSection" class="result-section" style="display: none;">
+      
+      <div id="basicMetrics" class="metrics-container">
+        </div>
+
+      <div class="ai-section">
+        <hr>
+        <p style="font-size: 12px; color: #666; margin-bottom: 10px;">Vēlies padziļinātu analīzi?</p>
+        <button id="generateAiBtn" class="ai-btn">Ģenerēt AI Ieteikumus ✨</button>
+      </div>
+
+      <div id="aiResultContainer" style="display: none; margin-top: 15px;">
+        <label for="auditResult">Gemini Atbilde:</label>
+        <textarea id="auditResult" rows="10"></textarea>
+        <button id="copyBtn" class="secondary-btn">Kopēt tekstu</button>
+      </div>
+    </div>
+
   </div>
   <script src="popup.js"></script>
 </body>
