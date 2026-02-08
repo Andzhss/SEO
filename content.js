@@ -1,47 +1,36 @@
 (function() {
   const data = {};
 
-  // URL
+  // --- 1. PAMATDATI ---
   data.url = window.location.href;
-
-  // Title
   data.title = document.title || "";
-
-  // Meta Description
+  
   const metaDesc = document.querySelector('meta[name="description"]');
   data.metaDescription = metaDesc ? metaDesc.getAttribute("content") : "";
 
-  // Canonical URL
   const canonical = document.querySelector('link[rel="canonical"]');
   data.canonical = canonical ? canonical.getAttribute("href") : "";
 
-  // H1
+  // --- 2. SATURA STRUKTŪRA ---
   const h1 = document.querySelector("h1");
   data.h1 = h1 ? h1.innerText.trim() : "";
 
-  // H2 - Iegūstam gan skaitu, gan tekstu sarakstu
+  // H2 un H3 (teksts un skaits)
   const h2Elements = document.querySelectorAll("h2");
   data.h2Count = h2Elements.length;
-  data.h2s = Array.from(h2Elements).map(el => el.innerText.trim()).filter(text => text.length > 0);
+  data.h2s = Array.from(h2Elements).map(el => el.innerText.trim()).filter(t => t.length > 0);
 
-  // H3 - Iegūstam gan skaitu, gan tekstu sarakstu
   const h3Elements = document.querySelectorAll("h3");
   data.h3Count = h3Elements.length;
-  data.h3s = Array.from(h3Elements).map(el => el.innerText.trim()).filter(text => text.length > 0);
+  data.h3s = Array.from(h3Elements).map(el => el.innerText.trim()).filter(t => t.length > 0);
 
-  // Links count
+  // Saites un vārdi
   data.linkCount = document.querySelectorAll("a").length;
-
-  // Body text 
   const bodyText = document.body.innerText || "";
-  
-  // Word count
   data.wordCount = bodyText.trim().split(/\s+/).filter(w => w.length > 0).length;
-  
-  // Snippet
   data.bodySnippet = bodyText.substring(0, 1000).replace(/\s+/g, " ").trim();
 
-  // Images analysis
+  // Attēli
   const images = document.querySelectorAll("img");
   let noAltCount = 0;
   images.forEach(img => {
@@ -51,6 +40,32 @@
   });
   data.imageCount = images.length;
   data.imagesWithoutAlt = noAltCount;
+
+  // --- 3. TEHNISKĀS PĀRBAUDES ---
+  
+  // Robots Tag
+  const robots = document.querySelector('meta[name="robots"]');
+  data.robots = robots ? robots.getAttribute("content") : "Nav norādīts (Index/Follow)";
+
+  // Viewport (Mobile)
+  const viewport = document.querySelector('meta[name="viewport"]');
+  data.viewport = !!viewport; 
+
+  // Favicon
+  const favicon = document.querySelector('link[rel="icon"], link[rel="shortcut icon"]');
+  data.favicon = !!favicon;
+
+  // Open Graph
+  const ogTitle = document.querySelector('meta[property="og:title"]');
+  const ogImage = document.querySelector('meta[property="og:image"]');
+  data.ogTags = {
+    hasTitle: !!ogTitle,
+    hasImage: !!ogImage
+  };
+
+  // Schema.org
+  const schema = document.querySelector('script[type="application/ld+json"]');
+  data.hasSchema = !!schema;
 
   return data;
 })();
