@@ -1,24 +1,15 @@
 {
   "manifest_version": 3,
-  "name": "SEO Auditor (Side Panel)",
-  "version": "1.3",
-  "description": "Veic SEO auditu sānjoslā.",
+  "name": "SEO Auditor",
+  "version": "2.0",
+  "description": "Veic SEO auditu, ģenerē AI ieteikumus un ļauj lejupielādēt atskaiti.",
   "permissions": [
-    "sidePanel",
     "activeTab",
     "scripting",
     "storage"
   ],
-  "host_permissions": [
-    "<all_urls>"
-  ],
-  "background": {
-    "service_worker": "service-worker.js"
-  },
   "action": {
+    "default_popup": "popup.html",
     "default_title": "Atvērt SEO Auditu"
-  },
-  "side_panel": {
-    "default_path": "popup.html"
   }
 }
