@@ -8,23 +8,23 @@
 </head>
 <body>
   <div class="container">
-    <h1>SEO Auditor</h1>
+    <h1>🔍 SEO Auditor</h1>
     
-    <div class="form-group">
-      <label for="apiKey">Gemini API Key</label>
-      <input type="password" id="apiKey" placeholder="Ievadi API atslēgu">
+    <div class="card settings-card">
+      <div class="form-group">
+        <label for="apiKey">Gemini API Key</label>
+        <input type="password" id="apiKey" placeholder="Ievadi API atslēgu">
+      </div>
+      <div class="form-group">
+        <label for="tone">AI Tonis</label>
+        <select id="tone">
+          <option value="Professional">Profesionāls</option>
+          <option value="Critical">Kritisks</option>
+          <option value="Sales-focused">Pārdošanas</option>
+        </select>
+      </div>
+      <button id="scanBtn" class="primary-btn">Veikt SEO Pārbaudi</button>
     </div>
-
-    <div class="form-group">
-      <label for="tone">AI Tonis</label>
-      <select id="tone">
-        <option value="Professional">Profesionāls</option>
-        <option value="Critical">Kritisks</option>
-        <option value="Sales-focused">Pārdošanas</option>
-      </select>
-    </div>
-
-    <button id="scanBtn" class="primary-btn">Veikt SEO Pārbaudi</button>
 
     <div id="status" class="status"></div>
 
@@ -33,20 +33,22 @@
       <div id="basicMetrics" class="metrics-container">
         </div>
 
-      <button id="downloadBtn" class="secondary-btn" style="background-color: #27ae60; margin-top: 15px;">
+      <button id="downloadBtn" class="secondary-btn download-btn">
         Lejupielādēt Pilnu Atskaiti (.txt) 📥
       </button>
 
-      <div class="ai-section">
-        <hr>
-        <p style="font-size: 12px; color: #666; margin-bottom: 10px;">Vēlies padziļinātu analīzi?</p>
-        <button id="generateAiBtn" class="ai-btn">Ģenerēt AI Ieteikumus ✨</button>
+      <div class="card ai-section">
+        <div class="ai-header">
+          <span>✨ AI Analīze</span>
+          <p class="ai-subtitle">Saņem padziļinātus ieteikumus</p>
+        </div>
+        <button id="generateAiBtn" class="ai-btn">Ģenerēt AI Ieteikumus</button>
       </div>
 
-      <div id="aiResultContainer" style="display: none; margin-top: 15px;">
+      <div id="aiResultContainer" class="card ai-result-card" style="display: none;">
         <label for="auditResult">Gemini Atbilde:</label>
-        <textarea id="auditResult" rows="10"></textarea>
-        <button id="copyBtn" class="secondary-btn">Kopēt tekstu</button>
+        <textarea id="auditResult" rows="10" readonly></textarea>
+        <button id="copyBtn" class="secondary-btn copy-btn">Kopēt tekstu</button>
       </div>
     </div>
 
