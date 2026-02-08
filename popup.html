@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SEO Auditor</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <h1>SEO Auditor</h1>
+    
+    <div class="form-group">
+      <label for="apiKey">Gemini API Key</label>
+      <input type="password" id="apiKey" placeholder="Enter your API Key">
+    </div>
+
+    <div class="form-group">
+      <label for="tone">Tone of Voice</label>
+      <select id="tone">
+        <option value="Professional">Professional</option>
+        <option value="Critical">Critical</option>
+        <option value="Sales-focused">Sales-focused</option>
+      </select>
+    </div>
+
+    <button id="generateBtn" class="primary-btn">Generate Audit</button>
+
+    <div id="resultSection" class="result-section" style="display: none;">
+      <label for="auditResult">Audit Result</label>
+      <textarea id="auditResult" rows="10"></textarea>
+      <button id="copyBtn" class="secondary-btn">Copy to Clipboard</button>
+    </div>
+
+    <div id="status" class="status"></div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

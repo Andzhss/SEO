@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "One-Click SEO Auditor",
+  "version": "1.0",
+  "description": "Perform quick SEO audits on client websites using Gemini API.",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "SEO Auditor"
+  }
+}
