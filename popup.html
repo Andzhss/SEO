@@ -1,53 +1,53 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="lv">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SEO Auditor</title>
+  <title>SEO Agency Tool</title>
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
   <div class="container">
-    <h1>🔍 SEO Auditor</h1>
+    <div class="header">
+      <h2>🚀 Agency Auditor</h2>
+      <span id="domainDisplay" class="domain-tag">...</span>
+    </div>
     
-    <div class="card settings-card">
-      <div class="form-group">
-        <label for="apiKey">Gemini API Key</label>
-        <input type="password" id="apiKey" placeholder="Ievadi API atslēgu">
-      </div>
-      <div class="form-group">
-        <label for="tone">AI Tonis</label>
-        <select id="tone">
-          <option value="Professional">Profesionāls</option>
-          <option value="Critical">Kritisks</option>
-          <option value="Sales-focused">Pārdošanas</option>
-        </select>
-      </div>
-      <button id="scanBtn" class="primary-btn">Veikt SEO Pārbaudi</button>
+    <div id="setupPanel" class="panel">
+      <input type="password" id="apiKey" placeholder="Tavs Gemini API Key">
+      <button id="saveKeyBtn" class="small-btn">Saglabāt</button>
     </div>
 
+    <button id="scanBtn" class="primary-btn big-btn">Skenēt Lapu</button>
     <div id="status" class="status"></div>
 
-    <div id="reportSection" class="result-section" style="display: none;">
+    <div id="reportSection" style="display: none;">
       
-      <div id="basicMetrics" class="metrics-container"></div>
-
-      <button id="downloadBtn" class="secondary-btn download-btn">
-        Lejupielādēt Pilnu Atskaiti (.txt) 📥
-      </button>
-
-      <div class="card ai-section">
-        <div class="ai-header">
-          <span>✨ AI Analīze</span>
-          <p class="ai-subtitle">Saņem padziļinātus ieteikumus</p>
+      <div class="metrics-grid">
+        <div class="metric-box" id="scoreSpeed">
+          <span class="label">Speed</span>
+          <span class="val" id="valSpeed">-</span>
         </div>
-        <button id="generateAiBtn" class="ai-btn">Ģenerēt AI Ieteikumus</button>
+        <div class="metric-box" id="scoreContent">
+          <span class="label">Saturs</span>
+          <span class="val" id="valWords">-</span>
+        </div>
+        <div class="metric-box" id="scoreTech">
+          <span class="label">Tech</span>
+          <span class="val" id="valTech">-</span>
+        </div>
       </div>
 
-      <div id="aiResultContainer" class="card ai-result-card" style="display: none;">
-        <label for="auditResult">Gemini Atbilde:</label>
-        <textarea id="auditResult" rows="10" readonly></textarea>
-        <button id="copyBtn" class="secondary-btn copy-btn">Kopēt tekstu</button>
+      <div id="detailedMetrics" class="details-list"></div>
+
+      <div class="action-buttons">
+        <button id="downloadReportBtn" class="secondary-btn">📄 Lejupielādēt Auditu (TXT)</button>
+        <button id="generateEmailBtn" class="ai-btn">📧 Ģenerēt "Cold Email"</button>
+      </div>
+
+      <div id="aiSection" class="panel" style="display:none;">
+        <label>Pārdošanas teksts:</label>
+        <textarea id="aiOutput" rows="8"></textarea>
+        <button id="copyAiBtn" class="secondary-btn">Kopēt</button>
       </div>
     </div>
 
