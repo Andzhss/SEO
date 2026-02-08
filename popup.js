@@ -61,6 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // --- LEJUPIELĀDE ---
+  // --- LEJUPIELĀDE ---
   if (downloadBtn) {
       downloadBtn.addEventListener('click', () => {
         if (!currentSeoData) return;
@@ -90,11 +91,39 @@ document.addEventListener('DOMContentLoaded', () => {
         text += `\n[VIRSRAKSTI H3 (${d.h3Count})]\n`;
         if (d.h3s) d.h3s.forEach(h => text += `- ${h}\n`);
 
+        // --- SĀKAS IZMAIŅAS FAILA NOSAUKUMAM ---
+        let fileName = 'seo-report.txt'; // Noklusējums, ja kaut kas noiet greizi
+
+        try {
+            const urlObj = new URL(d.url);
+            
+            // 1. Iegūstam domēnu (piem., "google.com" no "www.google.com")
+            const domain = urlObj.hostname.replace('www.', '');
+
+            // 2. Iegūstam ceļu (path), aizstājam simbolus, lai derētu faila nosaukumam
+            // Piemēram: "/blogs/jauns-raksts" kļūs par "blogs-jauns-raksts"
+            let path = urlObj.pathname.replace(/[^a-zA-Z0-9]/g, '-');
+            
+            // Noņemam liekās svītras sākumā/beigās un dubultās svītras
+            path = path.replace(/-+/g, '-').replace(/^-|-$/g, '');
+
+            // 3. Saliekam kopā
+            if (path) {
+                fileName = `${domain}_${path}_report.txt`;
+            } else {
+                // Ja ir tikai sākumlapa
+                fileName = `${domain}_home_report.txt`;
+            }
+        } catch (e) {
+            console.error("Neizdevās izveidot faila nosaukumu no URL", e);
+        }
+        // --- BEIDZAS IZMAIŅAS ---
+
         const blob = new Blob([text], { type: 'text/plain' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'seo-report.txt';
+        a.download = fileName; // Šeit ieliekam jauno ģenerēto nosaukumu
         a.click();
         URL.revokeObjectURL(url);
       });
