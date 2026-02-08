@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+fdocument.addEventListener('DOMContentLoaded', () => {
   const apiKeyInput = document.getElementById('apiKey');
   const toneSelect = document.getElementById('tone');
   const generateBtn = document.getElementById('generateBtn');
@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
       "${data.bodySnippet}"
     `;
 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
     
     const response = await fetch(url, {
       method: 'POST',
