@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "SEO Auditor",
-  "version": "2.0",
-  "description": "Veic SEO auditu, ģenerē AI ieteikumus un ļauj lejupielādēt atskaiti.",
+  "name": "SEO Auditor Pro",
+  "version": "2.2",
+  "description": "Profesionāls SEO audits, AI analīze un atskaites.",
   "permissions": [
     "activeTab",
     "scripting",
