@@ -1,14 +1,206 @@
+/* Reset un Pamati */
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   margin: 0;
   padding: 0;
-  width: 380px; /* Atpakaļ uz fiksēto platumu priekš Popup */
-  background-color: #f9f9f9;
+  width: 380px; /* Fiksēts platums priekš Popup */
+  background-color: #f0f2f5; /* Gaiši pelēks fons */
   color: #333;
 }
 
+/* Konteiners un Virsraksts */
 .container {
-  padding: 20px;
+  padding: 16px;
 }
 
-/* Pārējais kods paliek bez izmaiņām... */
+h1 {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 16px 0;
+  text-align: center;
+  color: #2c3e50;
+}
+
+/* Kartīšu Dizains */
+.card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+  padding: 16px;
+  margin-bottom: 16px;
+  border: 1px solid #e1e4e8;
+}
+
+/* Formas Elementi */
+.form-group {
+  margin-bottom: 12px;
+}
+
+label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+  font-size: 13px;
+  color: #555;
+}
+
+input[type="password"], select, textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #dce0e6;
+  border-radius: 6px;
+  box-sizing: border-box;
+  font-family: inherit;
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: #3498db;
+  outline: none;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 120px;
+  background-color: #f8f9fa;
+}
+
+/* Pogas (Modernas) */
+button {
+  width: 100%;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.primary-btn {
+  background-color: #3498db;
+  color: white;
+  margin-top: 10px;
+}
+.primary-btn:hover { background-color: #2980b9; }
+
+.secondary-btn {
+  background-color: #e2e6ea;
+  color: #495057;
+  border: 1px solid #dce0e6;
+  margin-top: 12px;
+}
+.secondary-btn:hover { background-color: #d3d9df; }
+
+.download-btn {
+  background-color: #2ecc71; /* Zaļa */
+  color: white;
+  border: none;
+}
+.download-btn:hover { background-color: #27ae60; }
+
+.copy-btn { margin-top: 8px; }
+
+/* AI Sadaļas Pogas */
+.ai-btn {
+  background: linear-gradient(135deg, #8e44ad, #c0392b); /* Violets gradients */
+  color: white;
+}
+.ai-btn:hover { opacity: 0.9; }
+
+/* Rezultātu Sadaļa */
+.result-section {
+  margin-top: 0; /* Kartītes veido atstarpes */
+}
+
+.status {
+  margin: 10px 0;
+  font-size: 13px;
+  text-align: center;
+  color: #666;
+  min-height: 18px;
+}
+.error { color: #e74c3c; }
+.success { color: #27ae60; }
+
+/* --- JAUNAIS TABULAS DIZAINS (Līdzīgs attēlam) --- */
+.metrics-container {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+  border: 1px solid #e1e4e8;
+  overflow: hidden; /* Lai stūri ir apaļi */
+  margin-bottom: 16px;
+}
+
+.metric-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f0f2f5;
+  font-size: 13px;
+}
+.metric-row:last-child { border-bottom: none; }
+
+.metric-label {
+  font-weight: 600;
+  color: #555;
+  display: flex;
+  align-items: center;
+}
+
+/* Vērtību un Statusa "Badge" stils */
+.metric-value {
+  padding: 4px 10px;
+  border-radius: 12px;
+  background-color: #f0f2f5;
+  color: #555;
+  font-weight: 500;
+  max-width: 55%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
+}
+
+.metric-value.good {
+  background-color: #d4edda; /* Gaiši zaļš fons */
+  color: #155724; /* Tumši zaļš teksts */
+}
+
+.metric-value.bad {
+  background-color: #f8d7da; /* Gaiši sarkans fons */
+  color: #721c24; /* Tumši sarkans teksts */
+}
+
+/* Grupu virsraksti tabulā */
+.group-header {
+  background-color: #f8f9fa;
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #6c757d;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid #f0f2f5;
+}
+
+/* AI Sadaļas Header */
+.ai-header {
+  margin-bottom: 12px;
+}
+.ai-header span {
+  font-weight: 700;
+  font-size: 16px;
+  color: #8e44ad;
+}
+.ai-subtitle {
+  font-size: 12px;
+  color: #777;
+  margin: 4px 0 0 0;
+}
